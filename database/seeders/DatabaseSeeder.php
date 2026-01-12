@@ -3,8 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Council;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,11 +17,25 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Create council first
+        $psgCouncil = Council::firstOrCreate([
+            'code' => 'PSG-UNIWIDE',
+        ], [
+            'name' => 'Paulinian Student Government',
+            'is_active' => true,
+            'description' => 'Kupal ka Paulinian Student Government',
+        ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Create user with council_id
+        User::firstOrCreate([
+            'email' => 'admin@psg.com',
+        ], [
+            'name' => 'Admin User',
+            'id_num' => 'ADM001',
+            'contact_number' => '+1234567890',
+            'admin' => true,
+            'council_id' => $psgCouncil->id,
+            'password' => Hash::make('password'),
         ]);
     }
 }

@@ -19,8 +19,13 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'id_num',
         'email',
+        'contact_number',
+        'admin',
+        'council_id',
         'password',
+        'pfp',
     ];
 
     /**
@@ -43,6 +48,15 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'admin' => 'boolean',
         ];
+    }
+
+    /**
+     * Get the council that the user belongs to.
+     */
+    public function council()
+    {
+        return $this->belongsTo(Council::class);
     }
 }
