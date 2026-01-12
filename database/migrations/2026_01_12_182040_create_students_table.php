@@ -14,12 +14,11 @@ return new class extends Migration
         Schema::create('students', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('id_num')->unique();
             $table->string('contact_number')->nullable();
             $table->string('email')->unique();
             $table->text('bio')->nullable();
             $table->string('password');
-            $table->string('pfp')->nullable();
+            $table->string('pfp')->nullable()->comment('Profile picture path or URL');
             $table->timestamps();
         });
     }

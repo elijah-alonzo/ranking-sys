@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateCouncil extends CreateRecord
 {
     protected static string $resource = CouncilResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

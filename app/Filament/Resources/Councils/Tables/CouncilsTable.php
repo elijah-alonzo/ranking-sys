@@ -13,11 +13,10 @@ class CouncilsTable
     {
         return $table
             ->columns([
+                \Filament\Tables\Columns\TextColumn::make('logo'),
                 \Filament\Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
                 \Filament\Tables\Columns\TextColumn::make('code')->searchable()->sortable(),
                 \Filament\Tables\Columns\IconColumn::make('is_active')->boolean(),
-                \Filament\Tables\Columns\TextColumn::make('description')->limit(30),
-                \Filament\Tables\Columns\TextColumn::make('logo'),
                 \Filament\Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable(),
             ])
             ->filters([

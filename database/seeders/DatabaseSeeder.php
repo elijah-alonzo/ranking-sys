@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create council first
+        // Council Seeder
         $psgCouncil = Council::firstOrCreate([
             'code' => 'PSG-UNIWIDE',
         ], [
@@ -26,12 +26,11 @@ class DatabaseSeeder extends Seeder
             'description' => 'Kupal ka Paulinian Student Government',
         ]);
 
-        // Create user with council_id
+        // User Seeder
         User::firstOrCreate([
             'email' => 'admin@psg.com',
         ], [
             'name' => 'Admin User',
-            'id_num' => 'ADM001',
             'contact_number' => '+1234567890',
             'admin' => true,
             'council_id' => $psgCouncil->id,
