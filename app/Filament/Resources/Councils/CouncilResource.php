@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Auth;
 class CouncilResource extends Resource
 {
     protected static ?string $model = Council::class;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingLibrary;
 
     public static function canAccess(): bool
