@@ -60,11 +60,17 @@ class UserForm
                             ->label('Role')
                             ->prefixIcon('heroicon-o-shield-check')
                             ->required()
-                            ->options([
-                                'admin' => 'Admin',
-                                'adviser' => 'Adviser',
-                                'student' => 'Student',
-                            ])
+                            ->options(function () {
+                                $user = \Illuminate\Support\Facades\Auth::user();
+                                if ($user && $user->role === 'adviser') {
+                                    return ['student' => 'Student'];
+                                }
+                                return [
+                                    'admin' => 'Admin',
+                                    'adviser' => 'Adviser',
+                                    'student' => 'Student',
+                                ];
+                            })
                             ->default('student')
                             ->placeholder('Select role')
                             ->columnSpan(1),

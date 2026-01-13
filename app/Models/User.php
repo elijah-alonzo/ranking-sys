@@ -52,4 +52,12 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * Get the evaluations where this user is the adviser.
+     */
+    public function evaluations()
+    {
+        return $this->hasMany(Evaluation::class, 'council_adviser_id');
+    }
+
 }

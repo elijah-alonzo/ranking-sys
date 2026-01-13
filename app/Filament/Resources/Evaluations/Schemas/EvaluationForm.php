@@ -16,7 +16,7 @@ class EvaluationForm
                     ->schema([
                         \Filament\Forms\Components\Select::make('council_id')
                             ->label('Council')
-                            ->relationship('council', 'name')
+                            ->relationship('council', 'name', fn ($query) => $query->where('is_active', true))
                             ->required(),
                         \Filament\Forms\Components\Select::make('council_adviser_id')
                             ->label('Council Adviser')

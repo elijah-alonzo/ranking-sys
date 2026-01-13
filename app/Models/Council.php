@@ -31,4 +31,12 @@ class Council extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    /**
+     * Get the evaluations for the council.
+     */
+    public function evaluations()
+    {
+        return $this->hasMany(Evaluation::class);
+    }
 }

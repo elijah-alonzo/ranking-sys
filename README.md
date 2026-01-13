@@ -1,16 +1,16 @@
 # AI INSTRUCTIONS #
-
+Add constraints
 ---
 
 ## WORKFLOW ##
-1. Admins create evaluations. They select a council, a council adviser (selected from users with either adviser or admin roles), and they put an academic year (example: 2023-2024)
-2. Once created, the council adviser manage evaluations assigned to them. When they click on the evaluation on the ListEvaluation, they are welcomed by the ViewEvaluation in this page, there is an edit button tat leads to the edit page. The ViewEvaluation shows sections that display information like the Evaluation Details section.
-3. 
 
 --- 
 
 ## TASK OVERVIEW ##
-1. Create Filament Evaluation Resource.
+1. Users with student and adviser roles should not be able to access the council resource.
+2. Only admins and advisers can access user resource.
+3. When an adviser creates a user, they can only assign the user they create with the student role.
+4. When creating an evaluation, councils with the active status can be assigned
 
 
 ## NOTES ##
