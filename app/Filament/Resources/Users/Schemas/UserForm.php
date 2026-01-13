@@ -84,7 +84,7 @@ class UserForm
                                     ->password()
                                     ->required(fn (string $context): bool => $context === 'create')
                                     ->minLength(8)
-                                    ->dehydrateStateUsing(fn ($state) => Hash::make($state))
+                                    ->dehydrateStateUsing(fn ($state) => !empty($state) ? Hash::make($state) : null)
                                     ->dehydrated(fn ($state) => filled($state))
                                     ->hiddenOn('view')
                                     ->revealable()

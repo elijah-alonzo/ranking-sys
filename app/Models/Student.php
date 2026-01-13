@@ -19,6 +19,7 @@ class Student extends Authenticatable
         'bio',
         'password',
         'pfp',
+        'is_active',
     ];
 
     protected $hidden = [
