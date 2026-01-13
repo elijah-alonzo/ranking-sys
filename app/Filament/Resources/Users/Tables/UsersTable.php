@@ -58,9 +58,6 @@ class UsersTable
             ])
             ->emptyStateHeading('No users yet')
             ->emptyStateDescription('Users will appear here once they are registered.')
-            ->recordActions([
-                EditAction::make(),
-            ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
