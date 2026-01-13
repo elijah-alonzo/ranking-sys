@@ -10,19 +10,26 @@ class EvaluationForm
     {
         return $schema
             ->components([
-                \Filament\Forms\Components\Select::make('council_id')
-                    ->label('Council')
-                    ->relationship('council', 'name')
-                    ->required(),
-                \Filament\Forms\Components\Select::make('council_adviser_id')
-                    ->label('Council Adviser')
-                    ->relationship('adviser', 'name')
-                    ->searchable()
-                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->name . ' (' . $record->role . ')')
-                    ->required(),
-                \Filament\Forms\Components\TextInput::make('academic_year')
-                    ->label('Academic Year')
-                    ->required(),
+                \Filament\Schemas\Components\Section::make('Evaluation Information')
+                    ->description('Create or edit evaluation details')
+                    ->columnSpanFull()
+                    ->schema([
+                        \Filament\Forms\Components\Select::make('council_id')
+                            ->label('Council')
+                            ->relationship('council', 'name')
+                            ->required(),
+                        \Filament\Forms\Components\Select::make('council_adviser_id')
+                            ->label('Council Adviser')
+                            ->relationship('adviser', 'name')
+                            ->searchable()
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->name . ' (' . $record->role . ')')
+                            ->required(),
+                        \Filament\Forms\Components\TextInput::make('academic_year')
+                            ->label('Academic Year')
+                            ->required(),
+                    ])
+                    ->columns(2)
+                    ->extraAttributes(['class' => 'mb-6']),
             ]);
     }
 }

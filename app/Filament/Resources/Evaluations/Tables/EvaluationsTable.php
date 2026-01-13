@@ -13,13 +13,15 @@ class EvaluationsTable
     {
         return $table
             ->columns([
-                //
+                \Filament\Tables\Columns\TextColumn::make('council.name')
+                    ->label('Council'),
+                \Filament\Tables\Columns\TextColumn::make('adviser.name')
+                    ->label('Adviser'),
+                \Filament\Tables\Columns\TextColumn::make('academic_year')
+                    ->label('Academic Year'),
             ])
             ->filters([
                 //
-            ])
-            ->recordActions([
-                EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
