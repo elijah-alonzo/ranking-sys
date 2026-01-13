@@ -7,6 +7,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Table;
 
+
 class UsersTable
 {
     public static function configure(Table $table): Table
@@ -48,10 +49,10 @@ class UsersTable
                         default => 'heroicon-o-question-mark-circle',
                     })
                     ->color(fn (string $state): string => match ($state) {
-                        'admin' => 'info',
-                        'adviser' => 'success',
+                        'admin' => 'gray',
+                        'adviser' => 'gray',
                         'student' => 'gray',
-                        default => 'warning',
+                        default => 'gray',
                     })
                     ->tooltip(fn (string $state): string => ucfirst($state)),
 
