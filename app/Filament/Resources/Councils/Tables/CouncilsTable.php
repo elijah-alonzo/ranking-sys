@@ -49,7 +49,10 @@ class CouncilsTable
             ->emptyStateHeading('No councils yet')
             ->emptyStateDescription('Councils will appear here once they are created.')
             ->filters([
-                //
+                \Filament\Tables\Filters\TernaryFilter::make('is_active')
+                    ->label('Active Status')
+                    ->trueLabel('Active')
+                    ->falseLabel('Inactive'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

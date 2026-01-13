@@ -70,6 +70,19 @@ class UsersTable
             ])
             ->emptyStateHeading('No users yet')
             ->emptyStateDescription('Users will appear here once they are registered.')
+            ->filters([
+                \Filament\Tables\Filters\SelectFilter::make('role')
+                    ->label('Role')
+                    ->options([
+                        'admin' => 'Admin',
+                        'adviser' => 'Adviser',
+                        'student' => 'Student',
+                    ]),
+                \Filament\Tables\Filters\TernaryFilter::make('is_active')
+                    ->label('Active Status')
+                    ->trueLabel('Active')
+                    ->falseLabel('Inactive'),
+            ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
