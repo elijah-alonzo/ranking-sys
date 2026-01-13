@@ -19,6 +19,15 @@ class CouncilForm
                     ->description('Create or edit council details')
                     ->columnSpanFull()
                     ->schema([
+                        FileUpload::make('logo')
+                            ->label('Council Logo')
+                            ->image()
+                            ->directory('council-logos')
+                            ->imageEditor()
+                            ->imagePreviewHeight('100')
+                            ->maxSize(2048)
+                            ->columnSpanFull(),
+
                         TextInput::make('name')
                             ->label('Council Name')
                             ->prefixIcon('heroicon-o-building-office')
@@ -34,32 +43,21 @@ class CouncilForm
                             ->maxLength(50)
                             ->placeholder('Enter council code')
                             ->columnSpan(1),
-
-                        Toggle::make('is_active')
-                            ->label('Is Active')
-                            ->inline(false)
-                            ->helperText('Activate or deactivate this council')
-                            ->columnSpan(2),
-
+                        
                         Textarea::make('description')
                             ->label('Description')
                             ->placeholder('Enter council description')
                             ->rows(3)
-                            ->columnSpanFull(),
+                            ->columnSpan(1),
+                            
+                        Toggle::make('is_active')
+                            ->label('Is Active')
+                            ->inline(false)
+                            ->helperText('Activate or deactivate this council')
+                            ->columnSpan(1),
                     ])
                     ->columns(2)
                     ->extraAttributes(['class' => 'mb-6']),
-
-                Section::make('Council Branding')
-                    ->description('Upload council logo and branding materials')
-                    ->columnSpanFull()
-                    ->schema([
-                        TextInput::make('logo')
-                            ->label('Logo URL')
-                            ->prefixIcon('heroicon-o-photo')
-                            ->placeholder('Enter logo URL or path')
-                            ->columnSpanFull(),
-                    ]),
             ]);
     }
 }
