@@ -20,9 +20,9 @@ class EvaluationForm
                             ->required(),
                         \Filament\Forms\Components\Select::make('council_adviser_id')
                             ->label('Council Adviser')
-                            ->relationship('adviser', 'name')
+                            ->relationship('adviser', 'name', fn ($query) => $query->whereIn('role', ['admin', 'adviser']))
                             ->searchable()
-                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->name . ' (' . $record->role . ')')
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->name)
                             ->required(),
                         \Filament\Forms\Components\TextInput::make('academic_year')
                             ->label('Academic Year')
