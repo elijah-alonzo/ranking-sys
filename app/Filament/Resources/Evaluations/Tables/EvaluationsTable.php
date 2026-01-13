@@ -12,9 +12,17 @@ class EvaluationsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->recordUrl(fn ($record) => \App\Filament\Resources\Evaluations\EvaluationResource::getUrl('view', ['record' => $record]))
+            ->modifyQueryUsing(function ($query) {
+                $user = auth()->user();
+                if ($user && $user->role === 'adviser') {
+                    $query->where('council_adviser_id', $user->id);
+                }
+                return $query;
+            })
             ->columns([
                 \Filament\Tables\Columns\ImageColumn::make('council.logo')
-                    ->label('Logo')
+                    ->label(' ')
                     ->circular()
                     ->size(40)
                     ->grow(false)

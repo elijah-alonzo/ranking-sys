@@ -16,4 +16,9 @@ class EditEvaluation extends EditRecord
             DeleteAction::make(),
         ];
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return static::getResource()::getUrl('view', ['record' => $this->getRecord()]);
+    }
 }

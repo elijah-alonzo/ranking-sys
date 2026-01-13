@@ -3,11 +3,17 @@
 namespace App\Filament\Resources\Evaluations\Pages;
 
 use App\Filament\Resources\Evaluations\EvaluationResource;
-use Filament\Resources\Pages\Page;
+use Filament\Actions\EditAction;
+use Filament\Resources\Pages\ViewRecord;
 
-class ViewEvaluation extends Page
+class ViewEvaluation extends ViewRecord
 {
     protected static string $resource = EvaluationResource::class;
 
-    protected string $view = 'filament.resources.evaluations.pages.view-evaluation';
+    protected function getHeaderActions(): array
+    {
+        return [
+            EditAction::make(),
+        ];
+    }
 }
