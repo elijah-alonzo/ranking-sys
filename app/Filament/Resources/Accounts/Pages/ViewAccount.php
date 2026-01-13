@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Accounts\Pages;
 
 use App\Filament\Resources\Accounts\AccountResource;
-use Filament\Actions\EditAction;
+use Filament\Actions\Action;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Schemas\Components\Grid;
@@ -32,8 +32,9 @@ class ViewAccount extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            EditAction::make()
+            Action::make('edit')
                 ->label('Edit Account')
+                ->url(fn (): string => AccountResource::getUrl('edit', ['record' => $this->record]))
         ];
     }
 

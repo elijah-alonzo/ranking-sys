@@ -44,6 +44,8 @@ class AccountResource extends Resource
         return auth()->check();
     }
 
+    protected static ?string $navigationLabel = 'Account';
+
     public static function canView($record): bool
     {
         return auth()->check() && auth()->id() === $record->id;
