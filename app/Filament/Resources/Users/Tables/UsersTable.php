@@ -39,16 +39,21 @@ class UsersTable
                     ->placeholder('No contact')
                     ->copyable(),
 
-                \Filament\Tables\Columns\TextColumn::make('role')
+                \Filament\Tables\Columns\IconColumn::make('role')
                     ->label('Role')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'admin' => 'danger',
-                        'adviser' => 'warning',
-                        'student' => 'success',
-                        default => 'gray',
+                    ->icon(fn (string $state): string => match ($state) {
+                        'admin' => 'heroicon-o-shield-check',
+                        'adviser' => 'heroicon-o-academic-cap',
+                        'student' => 'heroicon-o-user',
+                        default => 'heroicon-o-question-mark-circle',
                     })
-                    ->formatStateUsing(fn (string $state): string => ucfirst($state)),
+                    ->color(fn (string $state): string => match ($state) {
+                        'admin' => 'info',
+                        'adviser' => 'success',
+                        'student' => 'gray',
+                        default => 'warning',
+                    })
+                    ->tooltip(fn (string $state): string => ucfirst($state)),
 
                 \Filament\Tables\Columns\IconColumn::make('is_active')
                     ->boolean()

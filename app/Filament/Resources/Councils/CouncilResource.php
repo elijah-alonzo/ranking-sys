@@ -17,8 +17,7 @@ use Filament\Tables\Table;
 class CouncilResource extends Resource
 {
     protected static ?string $model = Council::class;
-
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingLibrary;
 
     public static function form(Schema $schema): Schema
     {
