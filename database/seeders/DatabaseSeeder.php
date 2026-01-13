@@ -32,8 +32,31 @@ class DatabaseSeeder extends Seeder
         ], [
             'name' => 'Admin User',
             'contact_number' => '+1234567890',
-            'admin' => true,
-            'council_id' => $psgCouncil->id,
+            'role' => 'admin',
+            'is_active' => true,
+            'bio' => 'System Administrator',
+            'password' => Hash::make('password'),
+        ]);
+
+        User::firstOrCreate([
+            'email' => 'adviser@psg.com',
+        ], [
+            'name' => 'Adviser User',
+            'contact_number' => '+1234567891',
+            'role' => 'adviser',
+            'is_active' => true,
+            'bio' => 'Faculty Adviser',
+            'password' => Hash::make('password'),
+        ]);
+
+        User::firstOrCreate([
+            'email' => 'student@psg.com',
+        ], [
+            'name' => 'Student User',
+            'contact_number' => '+1234567892',
+            'role' => 'student',
+            'is_active' => true,
+            'bio' => 'Student Member',
             'password' => Hash::make('password'),
         ]);
     }

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Users\Schemas;
 
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
@@ -20,20 +21,21 @@ class UserForm
                     ->description('Create or edit user account details')
                     ->columnSpanFull()
                     ->schema([
+                        FileUpload::make('pfp')
+                            ->label('Profile Picture')
+                            ->image()
+                            ->directory('profile-pictures')
+                            ->imageEditor()
+                            ->imagePreviewHeight('100')
+                            ->maxSize(2048)
+                            ->columnSpan(2),
+
                         TextInput::make('name')
                             ->label('Name')
                             ->prefixIcon('heroicon-o-user')
                             ->required()
                             ->maxLength(255)
                             ->placeholder('Enter full name')
-                            ->columnSpan(1),
-
-                        Select::make('council_id')
-                            ->label('Council')
-                            ->prefixIcon('heroicon-o-users')
-                            ->relationship('council', 'name')
-                            ->required()
-                            ->placeholder('Select council')
                             ->columnSpan(1),
 
                         TextInput::make('email')
@@ -45,7 +47,7 @@ class UserForm
                             ->unique(ignoreRecord: true)
                             ->placeholder('Enter email address')
                             ->columnSpan(1),
-
+                        
                         TextInput::make('contact_number')
                             ->label('Contact Number')
                             ->prefixIcon('heroicon-o-phone')
@@ -54,19 +56,30 @@ class UserForm
                             ->placeholder('Enter contact number')
                             ->columnSpan(1),
 
-                        FileUpload::make('pfp')
-                            ->label('Profile Picture')
-                            ->image()
-                            ->directory('profile-pictures')
-                            ->imageEditor()
-                            ->imagePreviewHeight('100')
-                            ->maxSize(2048)
+                        Select::make('role')
+                            ->label('Role')
+                            ->prefixIcon('heroicon-o-shield-check')
+                            ->required()
+                            ->options([
+                                'admin' => 'Admin',
+                                'adviser' => 'Adviser',
+                                'student' => 'Student',
+                            ])
+                            ->default('student')
+                            ->placeholder('Select role')
                             ->columnSpan(1),
 
-                        Toggle::make('admin')
-                            ->label('Is Admin')
+                        Toggle::make('is_active')
+                            ->label('Is Active')
                             ->inline(false)
-                            ->helperText('Check if this user is an admin')
+                            ->helperText('Activate or deactivate this user')
+                            ->default(true)
+                            ->columnSpan(1),
+                        
+                        Textarea::make('bio')
+                            ->label('Biography')
+                            ->placeholder('Enter user bio')
+                            ->rows(3)
                             ->columnSpan(1),
                     ])
                     ->columns(2)
@@ -84,7 +97,7 @@ class UserForm
                                     ->password()
                                     ->required(fn (string $context): bool => $context === 'create')
                                     ->minLength(8)
-                                    ->dehydrateStateUsing(fn ($state) => !empty($state) ? Hash::make($state) : null)
+                                    ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                                     ->dehydrated(fn ($state) => filled($state))
                                     ->hiddenOn('view')
                                     ->revealable()

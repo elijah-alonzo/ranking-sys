@@ -12,6 +12,7 @@ class UsersTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->recordUrl(fn ($record) => \App\Filament\Resources\Users\UserResource::getUrl('edit', ['record' => $record]))
             ->columns([
                 \Filament\Tables\Columns\ImageColumn::make('pfp')
                     ->label(' ')
@@ -38,19 +39,24 @@ class UsersTable
                     ->placeholder('No contact')
                     ->copyable(),
 
-                \Filament\Tables\Columns\TextColumn::make('council.name')
-                    ->label('Council')
-                    ->icon('heroicon-o-users')
+                \Filament\Tables\Columns\TextColumn::make('role')
+                    ->label('Role')
                     ->badge()
-                    ->color('primary'),
+                    ->color(fn (string $state): string => match ($state) {
+                        'admin' => 'danger',
+                        'adviser' => 'warning',
+                        'student' => 'success',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => ucfirst($state)),
 
-                \Filament\Tables\Columns\IconColumn::make('admin')
+                \Filament\Tables\Columns\IconColumn::make('is_active')
                     ->boolean()
-                    ->label('Admin')
-                    ->trueIcon('heroicon-o-shield-check')
-                    ->falseIcon('heroicon-o-user')
+                    ->label('Active')
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
                     ->trueColor('success')
-                    ->falseColor('gray'),
+                    ->falseColor('danger'),
 
                 \Filament\Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
