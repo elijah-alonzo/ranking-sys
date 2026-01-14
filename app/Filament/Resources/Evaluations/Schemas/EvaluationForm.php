@@ -18,7 +18,9 @@ class EvaluationForm
                             ->label('Council')
                             ->relationship('council', 'name', fn ($query) => $query->where('is_active', true))
                             ->required()
-                            ->prefixIcon('heroicon-m-building-office'),
+                            ->prefixIcon('heroicon-m-building-office')
+                            ->placeholder('Select an active council')
+                            ->helperText('Only active councils can have evaluations'),
                         \Filament\Forms\Components\Select::make('council_adviser_id')
                             ->label('Council Adviser')
                             ->relationship('adviser', 'name', fn ($query) => $query->whereIn('role', ['admin', 'adviser']))

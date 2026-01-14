@@ -21,6 +21,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\RepeatableEntry;
+use Illuminate\Database\Eloquent\Builder;
 
 class EvaluationResource extends Resource
 {
@@ -147,6 +148,65 @@ class EvaluationResource extends Resource
     public static function table(Table $table): Table
     {
         return EvaluationsTable::configure($table);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery()->with(['adviser', 'council']);
+
+        $user = auth()->user();
+        
+        if (!$user) {
+            return $query->whereRaw('1 = 0'); // No access if not authenticated
+        }
+
+        // Admin users can see all evaluations
+        if ($user->role === 'admin') {
+            return $query;
+        }
+
+        // Adviser users can only see evaluations where they are the adviser
+        if ($user->role === 'adviser') {
+            return $query->where('council_adviser_id', $user->id);
+        }
+
+        // Student users can only see evaluations they are part of
+        if ($user->role === 'student') {
+            return $query->whereHas('users', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            });
+        }
+
+        // Default: no access for other roles
+        return $query->whereRaw('1 = 0');
+    }
+
+    public static function canEdit($record): bool
+    {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return false;
+        }
+
+        // Only admins and advisers can edit evaluations
+        if (in_array($user->role, ['admin', 'adviser'])) {
+            // Advisers can only edit evaluations where they are the adviser
+            if ($user->role === 'adviser') {
+                return $record->council_adviser_id === $user->id;
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    public static function canDelete($record): bool
+    {
+        $user = auth()->user();
+        
+        // Only admins can delete evaluations
+        return $user && $user->role === 'admin';
     }
 
     public static function getRelations(): array

@@ -67,8 +67,14 @@ class StudentsRelationManager extends RelationManager
 
     protected function getHeaderActions(): array
     {
-        // Only show Add Student action in Edit page, not in View page
+        // Only show Add Student action in Edit page and only for advisers/admins
         if ($this->pageClass === \App\Filament\Resources\Evaluations\Pages\ViewEvaluation::class) {
+            return [];
+        }
+
+        // Check if user has permission to manage students
+        $user = auth()->user();
+        if (!$user || !in_array($user->role, ['admin', 'adviser'])) {
             return [];
         }
 
@@ -77,6 +83,9 @@ class StudentsRelationManager extends RelationManager
                 ->label('Add Student')
                 ->form($this->getAttachForm())
                 ->preloadRecordSelect()
+                ->modalHeading('Add Student to Evaluation')
+                ->modalDescription('Add a new student and optionally assign peer evaluatees')
+                ->modalWidth('lg')
                 ->before(function (AttachAction $action, array $data) {
                     // Check if user is already assigned to this evaluation
                     $existingUser = $this->ownerRecord->users()
@@ -92,14 +101,26 @@ class StudentsRelationManager extends RelationManager
                         
                         $action->halt();
                     }
+                })
+                ->after(function (AttachAction $action, array $data, $record) {
+                    // Assign peer evaluatees if provided
+                    if (isset($data['peer_evaluatees']) && !empty($data['peer_evaluatees'])) {
+                        $this->assignPeerEvaluatees($data['recordId'], $data['peer_evaluatees']);
+                    }
                 }),
         ];
     }
 
     protected function getTableActions(): array
     {
-        // Only show management actions in Edit page, not in View page
+        // Only show management actions in Edit page and only for advisers/admins
         if ($this->pageClass === \App\Filament\Resources\Evaluations\Pages\ViewEvaluation::class) {
+            return [];
+        }
+
+        // Check if user has permission to manage students
+        $user = auth()->user();
+        if (!$user || !in_array($user->role, ['admin', 'adviser'])) {
             return [];
         }
 
@@ -137,13 +158,33 @@ class StudentsRelationManager extends RelationManager
         return [
             Select::make('recordId')
                 ->label('Student')
-                ->options(User::all()->pluck('name', 'id'))
+                ->options(function () {
+                    return User::where('role', 'student')
+                        ->whereNotIn('id', $this->ownerRecord->users->pluck('id'))
+                        ->pluck('name', 'id');
+                })
                 ->searchable()
-                ->required(),
+                ->required()
+                ->placeholder('Select a student')
+                ->prefixIcon('heroicon-m-user'),
+                
             TextInput::make('position')
                 ->label('Position')
                 ->required()
-                ->maxLength(255),
+                ->maxLength(255)
+                ->placeholder('e.g., President, Secretary, Member')
+                ->prefixIcon('heroicon-m-identification'),
+
+            CheckboxList::make('peer_evaluatees')
+                ->label('Assign Peer Evaluatees')
+                ->options(function () {
+                    // Get all current students in the evaluation
+                    return $this->ownerRecord->users()
+                        ->pluck('name', 'users.id')
+                        ->toArray();
+                })
+                ->columns(2)
+                ->helperText('Optional: Select which students this peer evaluator will evaluate. You can also assign this later through the edit action'),
         ];
     }
 
