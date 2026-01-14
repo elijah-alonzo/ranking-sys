@@ -31,10 +31,14 @@ class EvaluationsTable
                     ->extraAttributes(['class' => 'ring-1 ring-gray-100 dark:ring-gray-800']),
                 
                 \Filament\Tables\Columns\TextColumn::make('council.name')
-                    ->label('Council'),
+                    ->label('Council')
+                    ->searchable()
+                    ->sortable(),
                     
                 \Filament\Tables\Columns\TextColumn::make('adviser.name')
-                    ->label('Adviser'),
+                    ->label('Adviser')
+                    ->searchable()
+                    ->sortable(),
                     
                 \Filament\Tables\Columns\ImageColumn::make('students_images')
                     ->label('Students')
@@ -56,7 +60,9 @@ class EvaluationsTable
                     }),
                     
                 \Filament\Tables\Columns\TextColumn::make('academic_year')
-                    ->label('Academic Year'),
+                    ->label('Academic Year')
+                    ->searchable()
+                    ->sortable(),
             ])
             ->filters([
                 \Filament\Tables\Filters\SelectFilter::make('academic_year')
@@ -69,6 +75,13 @@ class EvaluationsTable
                     })
                     ->placeholder('All Years')
                     ->searchable(),
+                    
+                \Filament\Tables\Filters\SelectFilter::make('council')
+                    ->label('Council')
+                    ->relationship('council', 'name')
+                    ->placeholder('All Councils')
+                    ->searchable()
+                    ->preload(),
                     
                 \Filament\Tables\Filters\SelectFilter::make('adviser')
                     ->label('Adviser')
