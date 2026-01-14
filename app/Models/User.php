@@ -60,4 +60,30 @@ class User extends Authenticatable
         return $this->hasMany(Evaluation::class, 'council_adviser_id');
     }
 
+    /**
+     * Get the evaluations this user is participating in
+     */
+    public function participatingEvaluations()
+    {
+        return $this->belongsToMany(Evaluation::class, 'evaluation_user')
+            ->withPivot('position')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get peer evaluations where this user is the evaluator
+     */
+    public function peerEvaluations()
+    {
+        return $this->hasMany(EvaluationPeerEvaluator::class, 'evaluator_user_id');
+    }
+
+    /**
+     * Get peer evaluations where this user is being evaluated
+     */
+    public function receivedPeerEvaluations()
+    {
+        return $this->hasMany(EvaluationPeerEvaluator::class, 'evaluatee_user_id');
+    }
+
 }

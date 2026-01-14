@@ -17,16 +17,20 @@ class EvaluationForm
                         \Filament\Forms\Components\Select::make('council_id')
                             ->label('Council')
                             ->relationship('council', 'name', fn ($query) => $query->where('is_active', true))
-                            ->required(),
+                            ->required()
+                            ->prefixIcon('heroicon-m-building-office'),
                         \Filament\Forms\Components\Select::make('council_adviser_id')
                             ->label('Council Adviser')
                             ->relationship('adviser', 'name', fn ($query) => $query->whereIn('role', ['admin', 'adviser']))
                             ->searchable()
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record->name)
-                            ->required(),
+                            ->required()
+                            ->prefixIcon('heroicon-m-user-circle'),
                         \Filament\Forms\Components\TextInput::make('academic_year')
                             ->label('Academic Year')
-                            ->required(),
+                            ->required()
+                            ->placeholder('e.g., 2024-2025')
+                            ->prefixIcon('heroicon-m-calendar-days'),
                     ])
                     ->columns(2)
                     ->extraAttributes(['class' => 'mb-6']),
