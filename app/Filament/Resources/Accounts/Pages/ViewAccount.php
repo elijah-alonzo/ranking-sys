@@ -32,6 +32,20 @@ class ViewAccount extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('logo')
+                ->label('')
+                ->icon('')
+                ->extraAttributes([
+                    'class' => 'pointer-events-none',
+                ])
+                ->modalHeading('')
+                ->modalDescription('')
+                ->modalSubmitAction(false)
+                ->modalCancelAction(false)
+                ->modalContent(
+                    fn () => '<img src="/logo.png" alt="Logo" style="height:48px;max-width:160px;object-fit:contain;" />'
+                )
+                ->visible(true),
             Action::make('edit')
                 ->label('Edit Account')
                 ->url(fn (): string => AccountResource::getUrl('edit', ['record' => $this->record]))

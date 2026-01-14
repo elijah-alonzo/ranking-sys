@@ -31,6 +31,8 @@ class RankingPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Green,
             ])
+            ->brandLogo(asset('logo.png'))
+            ->brandLogoHeight('2rem')
             ->breadcrumbs(false)
             
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')

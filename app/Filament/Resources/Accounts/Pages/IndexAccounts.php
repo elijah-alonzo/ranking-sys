@@ -11,7 +11,6 @@ class IndexAccounts extends ListRecords
 
     public function mount(): void
     {
-        // Redirect directly to view the user's account
         redirect(AccountResource::getUrl('view', ['record' => auth()->id()]));
     }
 }
