@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\MyEvaluations\Pages;
 
 use App\Filament\Resources\MyEvaluations\MyEvaluationResource;
-use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListMyEvaluations extends ListRecords
@@ -12,8 +11,7 @@ class ListMyEvaluations extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [
-            CreateAction::make(),
-        ];
+        // Users cannot create evaluations through MyEvaluations
+        return [];
     }
 }

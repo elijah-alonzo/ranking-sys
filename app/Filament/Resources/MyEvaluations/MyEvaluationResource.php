@@ -159,20 +159,16 @@ class MyEvaluationResource extends Resource
             return $query->whereRaw('1 = 0'); // No access if not authenticated
         }
 
-        // Adviser users can see evaluations where they are the adviser
-        if ($user->role === 'adviser') {
-            return $query->where('council_adviser_id', $user->id);
-        }
-
-        // Student users can see evaluations they are part of
-        if ($user->role === 'student') {
-            return $query->whereHas('users', function ($q) use ($user) {
-                $q->where('user_id', $user->id);
-            });
-        }
-
-        // Default: no access for other roles (admin should not see this resource)
-        return $query->whereRaw('1 = 0');
+        // Users can see evaluations where they are the adviser OR participating as a student
+        // This includes admin, adviser, and student users
+        return $query->where(function ($q) use ($user) {
+            // Show evaluations where user is the council adviser
+            $q->where('council_adviser_id', $user->id)
+              // OR show evaluations where user is participating as a student
+              ->orWhereHas('users', function ($subQ) use ($user) {
+                  $subQ->where('user_id', $user->id);
+              });
+        });
     }
 
     public static function canCreate(): bool

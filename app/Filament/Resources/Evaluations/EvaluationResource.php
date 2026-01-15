@@ -29,6 +29,13 @@ class EvaluationResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentCheck;
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        // Only show navigation to admin users
+        $user = auth()->user();
+        return $user && $user->role === 'admin';
+    }
+
     public static function infolist(Schema $schema): Schema
     {
         return $schema->components([
@@ -69,21 +76,8 @@ class EvaluationResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery()->with(['adviser', 'council']);
-
-        $user = auth()->user();
-        
-        if (!$user) {
-            return $query->whereRaw('1 = 0'); // No access if not authenticated
-        }
-
-        // Only admin users can access the Evaluation resource
-        if ($user->role === 'admin') {
-            return $query;
-        }
-
-        // All other roles have no access (they should use MyEvaluation resource instead)
-        return $query->whereRaw('1 = 0');
+        // Admin users can see all evaluations
+        return parent::getEloquentQuery()->with(['adviser', 'council']);
     }
 
     public static function canEdit($record): bool
