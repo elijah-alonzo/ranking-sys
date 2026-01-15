@@ -185,8 +185,8 @@ class MyEvaluationResource extends Resource
             return false;
         }
 
-        // Only advisers can edit evaluations where they are the adviser
-        if ($user->role === 'adviser') {
+        // Both admins and advisers can edit evaluations where they are the council adviser
+        if (in_array($user->role, ['admin', 'adviser'])) {
             return $record->council_adviser_id === $user->id;
         }
 
