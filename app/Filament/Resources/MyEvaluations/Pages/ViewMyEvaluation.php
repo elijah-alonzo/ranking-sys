@@ -11,8 +11,16 @@ class ViewMyEvaluation extends ViewRecord
     
     protected function getHeaderActions(): array
     {
-        return [
-            \Filament\Actions\EditAction::make(),
-        ];
+        $user = auth()->user();
+        $record = $this->getRecord();
+        
+        // Only show edit button if current user is the council adviser for this evaluation
+        if ($user && $record && $record->council_adviser_id === $user->id) {
+            return [
+                \Filament\Actions\EditAction::make(),
+            ];
+        }
+        
+        return [];
     }
 }

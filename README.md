@@ -10,7 +10,6 @@ I still want the StudentRelation to be present in the Evalution resource but wit
 So in a nutshell, MyEvaluation is for managing evaluations assigned to the user while Evaluations for for admin creating evaluations and monitoring what is done.
 
 ## ISSUE
-1. Evaluation resource is accessible with all user types. It should only be accessible by the admin. I cna see the evaluation nav link when I login as an adviser and student. Also remove the constraint where students and advisers can only see evaluation assigned to them in this resource.
-2. The evalutions made is not being shown in the My Evaluation table. It should show all evaluations assigned to and is participated by the USer. It should contain the same columns present in the evaluation table. 
-3. In relation with number issue 2, there is a my evaluation and evaluation nav link for the admins which is correct. But when I assign an evaluation for that admin, it is not shown in the my evaluation. Users with the admin and adviser roles can be assigned as council advisers
-4. I can also see an add new my evaluation buttton in the my evaluation list. Remove it
+1. When I go to MyEvaluation as a student and go to view, the edit button is seen, when I click it, it shows forbidden which is good but UX wise, why pu that button in the first place when it lead me to forbidden page. The edit button should only be accessible to the council adviser
+
+Solution: Only show the edit button to users assigned as council advisers.
