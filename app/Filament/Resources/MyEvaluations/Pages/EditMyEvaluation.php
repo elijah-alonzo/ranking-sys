@@ -10,10 +10,18 @@ class EditMyEvaluation extends EditRecord
 {
     protected static string $resource = MyEvaluationResource::class;
 
+    protected static ?string $title = 'Student Officers';
+
     protected function getHeaderActions(): array
     {
         return [
-            \Filament\Actions\ViewAction::make(),
+            \Filament\Actions\ViewAction::make()
+                ->label('Back to Evaluation'),
         ];
+    }
+
+    protected function getFormActions(): array
+    {
+        return [];
     }
 }

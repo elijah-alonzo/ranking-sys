@@ -8,6 +8,8 @@ use Filament\Resources\Pages\ViewRecord;
 class ViewMyEvaluation extends ViewRecord
 {
     protected static string $resource = MyEvaluationResource::class;
+
+    protected static ?string $title = 'My Evaluations';
     
     protected function getHeaderActions(): array
     {
@@ -17,7 +19,8 @@ class ViewMyEvaluation extends ViewRecord
         // Only show edit button if current user is the council adviser for this evaluation
         if ($user && $record && $record->council_adviser_id === $user->id) {
             return [
-                \Filament\Actions\EditAction::make(),
+                \Filament\Actions\EditAction::make()
+                ->label('Add Student Officers'),
             ];
         }
         
