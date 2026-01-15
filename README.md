@@ -1,3 +1,1 @@
-# NOTICE
-
-This project is currently under development. 
+![ranking-sys](public/logo.png)
