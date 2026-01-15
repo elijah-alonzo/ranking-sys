@@ -32,111 +32,28 @@ class EvaluationResource extends Resource
     public static function infolist(Schema $schema): Schema
     {
         return $schema->components([
-            Grid::make(2)->schema([
-                Section::make('Evaluation Details')
-                    ->description('View evaluation period and council information')
-                    ->schema([
-                        Grid::make(2)->schema([
-                            TextEntry::make('council.name')
-                                ->label('Council')
-                                ->icon('heroicon-m-building-office'),
-
-                            TextEntry::make('academic_year')
-                                ->label('Academic Year')
-                                ->icon('heroicon-m-calendar-days'),
-                        ]),
+            Section::make('Evaluation Details')
+                ->description('View evaluation period and council information')
+                ->schema([
+                    Grid::make(3)->schema([
+                        TextEntry::make('council.name')
+                            ->label('Council')
+                            ->icon('heroicon-m-building-office')
+                            ->columnSpan(1),
 
                         TextEntry::make('adviser.name')
                             ->label('Council Adviser')
                             ->icon('heroicon-m-user')
-                            ->color('primary'),
-                    ])
-                    ->columnSpan(1),
+                            ->color('primary')
+                            ->columnSpan(1),
 
-                Section::make('Assigned Peer Evaluators')
-                    ->description('Students assigned to conduct peer evaluations')
-                    ->schema([
-                        RepeatableEntry::make('peer_evaluators')
-                            ->label('Students')
-                            ->state(function ($record) {
-                                // Get all unique peer evaluators for this evaluation
-                                $peerEvaluators = EvaluationPeerEvaluator::where('evaluation_id', $record->id)
-                                    ->with(['evaluatorUser'])
-                                    ->get()
-                                    ->groupBy('evaluator_user_id');
-
-                                if ($peerEvaluators->isEmpty()) {
-                                    return [['no_evaluators' => true]];
-                                }
-
-                                return $peerEvaluators->map(function ($assignments, $evaluatorId) use ($record) {
-                                    $evaluator = $assignments->first()->evaluatorUser;
-                                    if (!$evaluator) return null;
-
-                                    // Get the user's position in this evaluation
-                                    $position = $record->users()
-                                        ->where('user_id', $evaluatorId)
-                                        ->first()
-                                        ?->pivot
-                                        ?->position ?? 'No position assigned';
-
-                                    return [
-                                        'pfp' => $evaluator->pfp,
-                                        'name' => $evaluator->name,
-                                        'position' => $position,
-                                        'evaluatee_count' => $assignments->count(),
-                                    ];
-                                })->filter()->values()->toArray();
-                            })
-                            ->schema([
-                                TextEntry::make('name')
-                                    ->label('Name')
-                                    ->weight('semibold')
-                                    ->formatStateUsing(fn ($state, $record) =>
-                                        isset($record['no_evaluators']) ?
-                                        'No peer evaluators assigned yet' :
-                                        $state
-                                    )
-                                    ->color(fn ($record) =>
-                                        isset($record['no_evaluators']) ? 'gray' : 'primary'
-                                    )
-                                    ->columnSpanFull()
-                                    ->visible(fn ($record) => isset($record['no_evaluators'])),
-
-                                Grid::make(4)
-                                    ->schema([
-                                        ImageEntry::make('pfp')
-                                            ->hiddenLabel()
-                                            ->circular()
-                                            ->size(40)
-                                            ->defaultImageUrl(fn ($state, $record) =>
-                                                'https://ui-avatars.com/api/?name=' .
-                                                urlencode($record['name'] ?? 'Unknown') .
-                                                '&color=7F9CF5&background=EBF4FF'
-                                            ),
-
-                                        TextEntry::make('name')
-                                            ->hiddenLabel(),
-
-                                        TextEntry::make('position')
-                                            ->hiddenLabel()
-                                            ->color('primary')
-                                            ->badge(),
-
-                                        TextEntry::make('evaluatee_count')
-                                            ->hiddenLabel()
-                                            ->suffix(fn ($state) => $state == 1 ? ' student' : ' students')
-                                            ->color('success')
-                                            ->weight('medium')
-                                            ->icon('heroicon-m-users'),
-                                    ])
-                                    ->visible(fn ($record) => !isset($record['no_evaluators'])),
-                            ])
-                            ->contained(false)
-                            ->grid(1),
-                    ])
-                    ->columnSpan(1),
-            ])->columnSpanFull(),
+                        TextEntry::make('academic_year')
+                            ->label('Academic Year')
+                            ->icon('heroicon-m-calendar-days')
+                            ->columnSpan(1),
+                    ]),
+                ])
+                ->columnSpanFull(),
         ]);
     }
 
@@ -160,24 +77,12 @@ class EvaluationResource extends Resource
             return $query->whereRaw('1 = 0'); // No access if not authenticated
         }
 
-        // Admin users can see all evaluations
+        // Only admin users can access the Evaluation resource
         if ($user->role === 'admin') {
             return $query;
         }
 
-        // Adviser users can only see evaluations where they are the adviser
-        if ($user->role === 'adviser') {
-            return $query->where('council_adviser_id', $user->id);
-        }
-
-        // Student users can only see evaluations they are part of
-        if ($user->role === 'student') {
-            return $query->whereHas('users', function ($q) use ($user) {
-                $q->where('user_id', $user->id);
-            });
-        }
-
-        // Default: no access for other roles
+        // All other roles have no access (they should use MyEvaluation resource instead)
         return $query->whereRaw('1 = 0');
     }
 
@@ -189,16 +94,8 @@ class EvaluationResource extends Resource
             return false;
         }
 
-        // Only admins and advisers can edit evaluations
-        if (in_array($user->role, ['admin', 'adviser'])) {
-            // Advisers can only edit evaluations where they are the adviser
-            if ($user->role === 'adviser') {
-                return $record->council_adviser_id === $user->id;
-            }
-            return true;
-        }
-
-        return false;
+        // Only admins can edit evaluations in this resource
+        return $user->role === 'admin';
     }
 
     public static function canDelete($record): bool
