@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\MyEvaluations\Pages;
 
 use App\Filament\Resources\MyEvaluations\MyEvaluationResource;
-use App\Filament\Resources\MyEvaluations\Schema\PeerEvaluationForm;
 use App\Models\Evaluation;
 use App\Models\EvaluationForm;
 use App\Models\EvaluationPeerEvaluator;
@@ -12,6 +11,8 @@ use Filament\Actions\Action;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Section;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
 use Illuminate\Contracts\Support\Htmlable;
@@ -68,8 +69,47 @@ class PeerEvaluationPage extends Page implements HasForms
     public function form(Form $form): Form
     {
         return $form
-            ->schema(PeerEvaluationForm::getSchema())
+            ->schema($this->buildEvaluationFormSchema('peer', 'Please rate each statement based on your observation and interaction'))
             ->statePath('data');
+    }
+
+    private function buildEvaluationFormSchema(string $evaluatorType, string $description): array
+    {
+        $questions = EvaluationForm::getQuestionsForEvaluator($evaluatorType);
+        $sections = [];
+        
+        // Group questions by domain
+        $groupedQuestions = [];
+        foreach ($questions as $key => $question) {
+            $domain = $question['domain'];
+            $groupedQuestions[$domain][$key] = $question;
+        }
+        
+        foreach ($groupedQuestions as $domain => $domainQuestions) {
+            $fields = [];
+            
+            foreach ($domainQuestions as $key => $question) {
+                $fields[] = Radio::make($key)
+                    ->label($question['text'])
+                    ->options([
+                        '0' => '0 - Never/Poor',
+                        '1' => '1 - Sometimes/Fair',
+                        '2' => '2 - Often/Good',
+                        '3' => '3 - Always/Excellent'
+                    ])
+                    ->inline()
+                    ->required()
+                    ->columnSpanFull();
+            }
+            
+            $sections[] = Section::make($domain)
+                ->description($description)
+                ->schema($fields)
+                ->collapsible()
+                ->columns(1);
+        }
+        
+        return $sections;
     }
 
     public function submit(): void
