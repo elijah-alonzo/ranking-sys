@@ -2,8 +2,11 @@
 
 namespace App\Filament\Resources\MyEvaluations;
 
+use App\Filament\Resources\MyEvaluations\Pages\AdviserEvaluationPage;
 use App\Filament\Resources\MyEvaluations\Pages\EditMyEvaluation;
 use App\Filament\Resources\MyEvaluations\Pages\ListMyEvaluations;
+use App\Filament\Resources\MyEvaluations\Pages\PeerEvaluationPage;
+use App\Filament\Resources\MyEvaluations\Pages\SelfEvaluationPage;
 use App\Filament\Resources\MyEvaluations\Pages\ViewMyEvaluation;
 use App\Filament\Resources\MyEvaluations\RelationManagers;
 use App\Filament\Resources\MyEvaluations\Tables\MyEvaluationsTable;
@@ -213,6 +216,9 @@ class MyEvaluationResource extends Resource
             'index' => ListMyEvaluations::route('/'),
             'view' => ViewMyEvaluation::route('/{record}'),
             'edit' => EditMyEvaluation::route('/{record}/edit'),
+            'self-evaluation' => SelfEvaluationPage::route('/{evaluation}/self'),
+            'peer-evaluation' => PeerEvaluationPage::route('/{evaluation}/peer/{user}'),
+            'adviser-evaluation' => AdviserEvaluationPage::route('/{evaluation}/adviser/{user}'),
         ];
     }
 }

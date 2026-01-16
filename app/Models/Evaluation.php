@@ -45,4 +45,30 @@ class Evaluation extends Model
     {
         return $this->hasMany(EvaluationPeerEvaluator::class);
     }
+
+    /**
+     * Generate URL for evaluating a specific user
+     */
+    public function getEvaluationUrl(int $userId, string $evaluatorType): string
+    {
+        switch ($evaluatorType) {
+            case 'self':
+                return \App\Filament\Resources\MyEvaluations\MyEvaluationResource::getUrl(
+                    'self-evaluation', 
+                    ['evaluation' => $this->id]
+                );
+            case 'peer':
+                return \App\Filament\Resources\MyEvaluations\MyEvaluationResource::getUrl(
+                    'peer-evaluation', 
+                    ['evaluation' => $this->id, 'user' => $userId]
+                );
+            case 'adviser':
+                return \App\Filament\Resources\MyEvaluations\MyEvaluationResource::getUrl(
+                    'adviser-evaluation', 
+                    ['evaluation' => $this->id, 'user' => $userId]
+                );
+            default:
+                throw new \InvalidArgumentException("Invalid evaluator type: {$evaluatorType}");
+        }
+    }
 }

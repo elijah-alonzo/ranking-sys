@@ -4,6 +4,7 @@ namespace App\Filament\Resources\MyEvaluations\RelationManagers;
 
 use App\Models\User;
 use App\Models\EvaluationPeerEvaluator;
+use App\Models\EvaluationForm as EvaluationFormModel;
 use App\Filament\Resources\MyEvaluations\MyEvaluationResource;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -12,6 +13,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Actions\AttachAction;
 use Filament\Actions\DetachAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\Action;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ImageColumn;
@@ -62,14 +64,28 @@ class StudentsRelationManager extends RelationManager
                     ->getStateUsing(fn ($record) => $this->getPeerEvaluatorsCount($record->id))
                     ->tooltip('Number of peers who will evaluate this student'),
             ]),
+            ColumnGroup::make('Evaluation Scores', [
+                TextColumn::make('self_score')
+                    ->label('Self')
+                    ->getStateUsing(fn ($record) => $this->getEvaluationScore($record->id, 'self'))
+                    ->tooltip('Self evaluation score'),
+                TextColumn::make('peer_score')
+                    ->label('Peer')
+                    ->getStateUsing(fn ($record) => $this->getEvaluationScore($record->id, 'peer'))
+                    ->tooltip('Peer evaluation score'),
+                TextColumn::make('adviser_score')
+                    ->label('Adviser')
+                    ->getStateUsing(fn ($record) => $this->getEvaluationScore($record->id, 'adviser'))
+                    ->tooltip('Adviser evaluation score'),
+            ]),
         ];
     }
 
     protected function getHeaderActions(): array
     {
-        // Check if user has permission to manage students (only advisers can manage in MyEvaluations)
+        // Check if user is the council adviser for this evaluation
         $user = auth()->user();
-        if (!$user || $user->role !== 'adviser' || $this->ownerRecord->council_adviser_id !== $user->id) {
+        if (!$user || $this->ownerRecord->council_adviser_id !== $user->id) {
             return [];
         }
 
@@ -108,9 +124,9 @@ class StudentsRelationManager extends RelationManager
 
     protected function getTableActions(): array
     {
-        // Check if user has permission to manage students (only advisers can manage in MyEvaluations)
+        // Check if user is the council adviser for this evaluation
         $user = auth()->user();
-        if (!$user || $user->role !== 'adviser' || $this->ownerRecord->council_adviser_id !== $user->id) {
+        if (!$user || $this->ownerRecord->council_adviser_id !== $user->id) {
             return [];
         }
 
@@ -244,6 +260,23 @@ class StudentsRelationManager extends RelationManager
             ->count();
 
         return $count > 0 ? $count : '-';
+    }
+
+    /**
+     * Get the evaluation score for a user and evaluator type
+     */
+    protected function getEvaluationScore(int $userId, string $evaluatorType): string
+    {
+        $score = EvaluationFormModel::where('evaluation_id', $this->ownerRecord->id)
+            ->where('user_id', $userId)
+            ->where('evaluator_type', $evaluatorType)
+            ->first();
+
+        if ($score && $score->evaluator_score !== null) {
+            return number_format($score->evaluator_score, 2);
+        }
+        
+        return '-';
     }
 
     protected function assignPeerEvaluatees(int $evaluatorUserId, array $evaluateeIds): void
