@@ -21,6 +21,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Illuminate\Database\Eloquent\Builder;
+use UnitEnum;
 
 class MyEvaluationResource extends Resource
 {
@@ -33,6 +34,10 @@ class MyEvaluationResource extends Resource
     protected static ?string $pluralModelLabel = 'My Evaluations';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentCheck;
+
+    protected static UnitEnum|string|null $navigationGroup = 'Personal Management';
+
+    protected static ?int $navigationSort = 1;
 
     public static function infolist(Schema $schema): Schema
     {

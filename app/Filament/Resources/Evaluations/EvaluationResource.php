@@ -17,6 +17,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use UnitEnum;
 
 class EvaluationResource extends Resource
 {
@@ -29,6 +30,10 @@ class EvaluationResource extends Resource
         $user = Auth::user();
         return $user && $user->role === 'admin';
     }
+
+    protected static UnitEnum|string|null $navigationGroup = 'Adviser Settings';
+
+    protected static ?int $navigationSort = 5;
 
     public static function shouldRegisterNavigation(): bool
     {

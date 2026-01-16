@@ -14,6 +14,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
+use UnitEnum;
 
 class CouncilResource extends Resource
 {
@@ -26,6 +27,10 @@ class CouncilResource extends Resource
         $user = Auth::user();
         return $user && $user->role === 'admin';
     }
+
+    protected static UnitEnum|string|null $navigationGroup = 'Adviser Settings';
+
+    protected static ?int $navigationSort = 4;
 
     public static function form(Schema $schema): Schema
     {

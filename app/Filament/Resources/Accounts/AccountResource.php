@@ -11,6 +11,7 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use UnitEnum;
 
 class AccountResource extends Resource
 {
@@ -22,6 +23,10 @@ class AccountResource extends Resource
     {
         return AccountForm::configure($schema);
     }
+
+    protected static UnitEnum|string|null $navigationGroup = 'Personal Management';
+
+    protected static ?int $navigationSort = 2;
 
     public static function getRelations(): array
     {
