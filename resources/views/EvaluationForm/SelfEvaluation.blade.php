@@ -38,6 +38,63 @@
             @media (max-width: 600px) {
                 .ef-rating-scale { flex-direction: column; gap: 10px; align-items: flex-start; }
             }
+            /* Dark mode overrides */
+            .dark .ef-evaluation-card,
+            [data-theme="dark"] .ef-evaluation-card {
+                background: #18181b;
+                border-color: #27272a;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            }
+            .dark .ef-domain-section,
+            [data-theme="dark"] .ef-domain-section {
+                background: #18181b;
+                border-color: #27272a;
+            }
+            .dark .ef-domain-header,
+            [data-theme="dark"] .ef-domain-header {
+                border-bottom-color: #27272a;
+            }
+            .dark .ef-domain-title,
+            .dark .ef-strand-title,
+            .dark .ef-question-text,
+            [data-theme="dark"] .ef-domain-title,
+            [data-theme="dark"] .ef-strand-title,
+            [data-theme="dark"] .ef-question-text {
+                color: #fafafa;
+            }
+            .dark .ef-domain-description,
+            .dark .ef-rating-criteria,
+            [data-theme="dark"] .ef-domain-description,
+            [data-theme="dark"] .ef-rating-criteria {
+                color: #a1a1aa;
+            }
+            .dark .ef-question-item,
+            [data-theme="dark"] .ef-question-item {
+                border-bottom-color: #27272a;
+            }
+            .dark .ef-rating-value,
+            [data-theme="dark"] .ef-rating-value {
+                color: #4ade80;
+            }
+            .dark .ef-form-actions,
+            [data-theme="dark"] .ef-form-actions {
+                /* no color override needed */
+            }
+            .dark .ef-btn-primary,
+            [data-theme="dark"] .ef-btn-primary {
+                background: #22C55E;
+                color: #18181b;
+            }
+            .dark .ef-btn-primary:hover,
+            [data-theme="dark"] .ef-btn-primary:hover {
+                background: #16a34a;
+            }
+            .dark .ef-locked-message,
+            [data-theme="dark"] .ef-locked-message {
+                background: #27272a;
+                color: #4ade80;
+                border-left-color: #4ade80;
+            }
         </style>
         <div class="ef-evaluation-card">
             <div class="ef-evaluation-header">
