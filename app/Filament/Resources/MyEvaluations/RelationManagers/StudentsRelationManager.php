@@ -119,29 +119,20 @@ class StudentsRelationManager extends RelationManager
 
         $actions = [];
 
-        // Adviser: can evaluate any student
-        if ($isAdviser) {
-            $actions[] = Action::make('evaluate')
-                ->label('Evaluate')
-                ->icon('heroicon-o-clipboard-document-check')
-                ->color('success')
-                ->size('sm')
-                ->url(fn ($record) => $this->ownerRecord->getEvaluationUrl($record->id, 'adviser'))
-                ->tooltip('Complete adviser evaluation for this student');
-        }
-
-        // Student: can self-evaluate and peer-evaluate assigned students
-        if ($isStudent) {
-            $actions[] = Action::make('evaluate')
-                ->label('Evaluate')
-                ->icon('heroicon-o-clipboard-document-check')
-                ->color('success')
-                ->size('sm')
-                ->url(function ($record) use ($user) {
+        // Unified Evaluate button logic
+        $actions[] = Action::make('evaluate')
+            ->label('Evaluate')
+            ->icon('heroicon-o-clipboard-document-check')
+            ->color('success')
+            ->size('sm')
+            ->url(function ($record) use ($user, $isAdviser, $isStudent) {
+                if ($isAdviser) {
+                    return $this->ownerRecord->getEvaluationUrl($record->id, 'adviser');
+                }
+                if ($isStudent) {
                     if ($user->id === $record->id) {
                         return $this->ownerRecord->getEvaluationUrl($record->id, 'self');
                     }
-                    // Check if current user is assigned as peer evaluator for this student
                     $isPeerEvaluator = \App\Models\EvaluationPeerEvaluator::where('evaluation_id', $this->ownerRecord->id)
                         ->where('evaluator_user_id', $user->id)
                         ->where('evaluatee_user_id', $record->id)
@@ -149,9 +140,14 @@ class StudentsRelationManager extends RelationManager
                     if ($isPeerEvaluator) {
                         return $this->ownerRecord->getEvaluationUrl($record->id, 'peer');
                     }
-                    return null;
-                })
-                ->tooltip(function ($record) use ($user) {
+                }
+                return null;
+            })
+            ->tooltip(function ($record) use ($user, $isAdviser, $isStudent) {
+                if ($isAdviser) {
+                    return 'Complete adviser evaluation for this student';
+                }
+                if ($isStudent) {
                     if ($user->id === $record->id) {
                         return 'Complete your self evaluation';
                     }
@@ -163,8 +159,14 @@ class StudentsRelationManager extends RelationManager
                         return 'Complete peer evaluation for this student';
                     }
                     return 'You are not assigned to evaluate this student';
-                })
-                ->disabled(function ($record) use ($user) {
+                }
+                return '';
+            })
+            ->disabled(function ($record) use ($user, $isAdviser, $isStudent) {
+                if ($isAdviser) {
+                    return false;
+                }
+                if ($isStudent) {
                     if ($user->id === $record->id) {
                         return false;
                     }
@@ -173,8 +175,9 @@ class StudentsRelationManager extends RelationManager
                         ->where('evaluatee_user_id', $record->id)
                         ->exists();
                     return !$isPeerEvaluator;
-                });
-        }
+                }
+                return true;
+            });
 
         // Edit/Remove actions for adviser only
         if ($isAdviser) {
