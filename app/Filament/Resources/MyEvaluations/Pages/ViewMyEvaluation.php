@@ -37,7 +37,7 @@ class ViewMyEvaluation extends ViewRecord
                     ->label('Self Evaluation')
                     ->icon('heroicon-o-user-circle')
                     ->color('success')
-                    ->url(fn() => MyEvaluationResource::getUrl('evaluate-student', ['evaluation' => $record->id, 'user' => $user->id]) . '?type=self')
+                    ->url(fn() => MyEvaluationResource::getUrl('evaluate-student', ['evaluation' => $record->id, 'user' => $user->id, 'type' => 'self']))
                     ->tooltip('Complete your self evaluation');
                     
                 // Peer evaluations
@@ -70,7 +70,7 @@ class ViewMyEvaluation extends ViewRecord
             $actions[] = Action::make("evaluate_peer_{$evaluatee->id}")
                 ->label("Evaluate {$evaluatee->name}")
                 ->icon('heroicon-o-clipboard-document-check')
-                ->url(fn() => MyEvaluationResource::getUrl('evaluate-student', ['evaluation' => $record->id, 'user' => $evaluatee->id]) . '?type=peer')
+                ->url(fn() => MyEvaluationResource::getUrl('evaluate-student', ['evaluation' => $record->id, 'user' => $evaluatee->id, 'type' => 'peer']))
                 ->tooltip("Complete peer evaluation for {$evaluatee->name}");
         }
         
