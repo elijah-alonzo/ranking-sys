@@ -113,16 +113,38 @@ class StudentsRelationManager extends RelationManager
 
     protected function getTableActions(): array
     {
-        return [
-            Action::make('evaluate')
+        $user = auth()->user();
+        $isAdviser = $this->isCouncilAdviser();
+        $isStudent = $user && $user->role === 'student';
+
+        $actions = [];
+
+        // Adviser: can evaluate any student
+        if ($isAdviser) {
+            $actions[] = Action::make('evaluate')
                 ->label('Evaluate')
                 ->icon('heroicon-o-clipboard-document-check')
                 ->color('success')
                 ->size('sm')
                 ->url(fn ($record) => $this->ownerRecord->getEvaluationUrl($record->id, 'adviser'))
-                ->tooltip('Complete adviser evaluation for this student')
-                ->visible(fn () => $this->isCouncilAdviser()),
-            EditAction::make()
+                ->tooltip('Complete adviser evaluation for this student');
+        }
+
+        // Student: can only self-evaluate (button enabled only for own row)
+        if ($isStudent) {
+            $actions[] = Action::make('evaluate')
+                ->label('Evaluate')
+                ->icon('heroicon-o-clipboard-document-check')
+                ->color('success')
+                ->size('sm')
+                ->url(fn ($record) => $this->ownerRecord->getEvaluationUrl($record->id, 'self'))
+                ->tooltip('Complete your self evaluation')
+                ->disabled(fn ($record) => $user->id !== $record->id);
+        }
+
+        // Edit/Remove actions for adviser only
+        if ($isAdviser) {
+            $actions[] = EditAction::make()
                 ->color('info')
                 ->form($this->getEditForm())
                 ->action(function ($record, $data) {
@@ -136,12 +158,11 @@ class StudentsRelationManager extends RelationManager
                 })
                 ->modalHeading(fn ($record) => 'Edit ' . $record->name)
                 ->modalDescription('Update student details and peer evaluation assignments')
-                ->modalWidth('lg')
-                ->visible(fn () => $this->isCouncilAdviser()),
-            DetachAction::make()
+                ->modalWidth('lg');
+
+            $actions[] = DetachAction::make()
                 ->label('Remove')
                 ->color('danger')
-                ->visible(fn () => $this->isCouncilAdviser())
                 ->after(function ($record) {
                     // Remove all peer evaluator assignments for this student in this evaluation
                     EvaluationPeerEvaluator::where('evaluation_id', $this->ownerRecord->id)
@@ -150,8 +171,10 @@ class StudentsRelationManager extends RelationManager
                                   ->orWhere('evaluator_user_id', $record->id);
                         })
                         ->delete();
-                }),
-        ];
+                });
+        }
+
+        return $actions;
     }
 
     protected function getAttachForm(): array

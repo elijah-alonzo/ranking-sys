@@ -26,32 +26,9 @@ class ViewMyEvaluation extends ViewRecord
                 ->label('Add Student Officers');
         }
         
-        // Students can access evaluations
+        // Students: No header actions for self/peer evaluation (handled in table row)
         if ($user && $record && $user->role === 'student') {
-            // Check if user is participating in this evaluation
-            $isParticipating = $record->users()->where('user_id', $user->id)->exists();
-            
-            if ($isParticipating) {
-                // Self evaluation
-                $actions[] = Action::make('self_evaluation')
-                    ->label('Self Evaluation')
-                    ->icon('heroicon-o-user-circle')
-                    ->color('success')
-                    ->url(fn() => MyEvaluationResource::getUrl('evaluate-student', ['evaluation' => $record->id, 'user' => $user->id, 'type' => 'self']))
-                    ->tooltip('Complete your self evaluation');
-                    
-                // Peer evaluations
-                $peerEvaluatees = EvaluationPeerEvaluator::getEvaluatableUsers($record->id, $user->id);
-                
-                if (!empty($peerEvaluatees)) {
-                    $actions[] = Action::make('peer_evaluations')
-                        ->label('Peer Evaluations')
-                        ->icon('heroicon-o-user-group')
-                        ->color('warning')
-                        ->actions($this->getPeerEvaluationActions($record, $peerEvaluatees))
-                        ->tooltip('Evaluate your assigned peers');
-                }
-            }
+            // No header actions for students
         }
         
         return $actions;
