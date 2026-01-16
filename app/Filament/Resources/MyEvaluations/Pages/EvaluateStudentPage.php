@@ -23,7 +23,8 @@ class EvaluateStudentPage extends Page
     protected static string $resource = MyEvaluationResource::class;
     protected static bool $shouldRegisterNavigation = false;
     
-    protected string $view = 'EvaluationForm.Layout';
+    // Use the main evaluation partial as the view (adviser/peer/self will be handled in the view logic)
+    protected string $view = 'EvaluationForm.AdviserEvaluation';
 
     public ?Evaluation $evaluation = null;
     public ?User $evaluatee = null;
