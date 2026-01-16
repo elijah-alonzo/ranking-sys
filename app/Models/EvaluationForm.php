@@ -43,16 +43,77 @@ class EvaluationForm extends Model
 	// QUESTION MANAGEMENT
 	// ========================================
 
+
+	/**
+	 * Returns a flat array of questions for the given evaluator type, preserving the old interface.
+	 * Each question includes: text, domain, strand, criteria, and a unique key.
+	 */
 	public static function getQuestionsForEvaluator(string $evaluatorType): array
 	{
-		$allQuestions = self::getAllQuestions();
-
-		return match ($evaluatorType) {
-			'adviser' => $allQuestions,
-			'peer' => self::getPeerQuestions($allQuestions),
-			'self' => self::getSelfQuestions($allQuestions),
+		$rubric = self::getRubricStructure();
+		$questionKeys = match ($evaluatorType) {
+			'adviser' => self::getAllQuestionKeys($rubric),
+			'peer' => [
+				['Domain 2','Strand 1','1.1'],
+				['Domain 2','Strand 2','2.1'],
+				['Domain 2','Strand 2','2.2'],
+				['Domain 2','Strand 3','3.1'],
+				['Domain 2','Strand 3','3.2'],
+				['Domain 3','Strand 1','1.1'],
+				['Domain 3','Strand 2','2.1'],
+			],
+			'self' => [
+				['Domain 2','Strand 1','1.1'],
+				['Domain 2','Strand 2','2.1'],
+				['Domain 2','Strand 2','2.2'],
+				['Domain 3','Strand 1','1.1'],
+				['Domain 3','Strand 2','2.1'],
+			],
 			default => [],
 		};
+
+		$questions = [];
+		foreach ($questionKeys as $key) {
+			// For adviser, $key is [domain, strand, qkey]; for others, same
+			if (is_string($key)) {
+				// For adviser, get all keys
+				$parts = explode('|', $key);
+				if (count($parts) !== 3) continue;
+				[$domain, $strand, $qkey] = $parts;
+			} else {
+				[$domain, $strand, $qkey] = $key;
+			}
+			if (isset($rubric[$domain]['strands'][$strand]['questions'][$qkey])) {
+				$q = $rubric[$domain]['strands'][$strand]['questions'][$qkey];
+				$questions["{$domain}|{$strand}|{$qkey}"] = [
+					'text' => $q['text'],
+					'domain' => $rubric[$domain]['title'],
+					'domain_key' => $domain,
+					'domain_description' => $rubric[$domain]['description'],
+					'strand' => $rubric[$domain]['strands'][$strand]['title'],
+					'strand_key' => $strand,
+					'criteria' => $q['criteria'],
+					'qkey' => $qkey,
+				];
+			}
+		}
+		return $questions;
+	}
+
+	/**
+	 * Returns all question keys in the rubric as [domain|strand|qkey] strings.
+	 */
+	protected static function getAllQuestionKeys(array $rubric): array
+	{
+		$keys = [];
+		foreach ($rubric as $domainKey => $domain) {
+			foreach ($domain['strands'] as $strandKey => $strand) {
+				foreach ($strand['questions'] as $qkey => $q) {
+					$keys[] = "$domainKey|$strandKey|$qkey";
+				}
+			}
+		}
+		return $keys;
 	}
 
 	protected static function getPeerQuestions(array $allQuestions): array
