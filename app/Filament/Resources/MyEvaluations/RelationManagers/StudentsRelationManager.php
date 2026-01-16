@@ -73,15 +73,14 @@ class StudentsRelationManager extends RelationManager
 
     protected function getHeaderActions(): array
     {
-        // Check if user is the council adviser for this evaluation
-        $user = auth()->user();
-        if (!$user || $this->ownerRecord->council_adviser_id !== $user->id) {
+        if (!$this->isCouncilAdviser()) {
             return [];
         }
 
         return [
             AttachAction::make()
                 ->label('Add Student')
+                ->color('info')
                 ->form($this->getAttachForm())
                 ->preloadRecordSelect()
                 ->modalHeading('Add Student to Evaluation')
@@ -118,16 +117,13 @@ class StudentsRelationManager extends RelationManager
             Action::make('evaluate')
                 ->label('Evaluate')
                 ->icon('heroicon-o-clipboard-document-check')
-                ->color('primary')
-                ->button()
+                ->color('success')
                 ->size('sm')
                 ->url(fn ($record) => $this->ownerRecord->getEvaluationUrl($record->id, 'adviser'))
                 ->tooltip('Complete adviser evaluation for this student')
-                ->visible(function () {
-                    $user = auth()->user();
-                    return $user && $this->ownerRecord->council_adviser_id === $user->id;
-                }),
+                ->visible(fn () => $this->isCouncilAdviser()),
             EditAction::make()
+                ->color('info')
                 ->form($this->getEditForm())
                 ->action(function ($record, $data) {
                     // Update student position
@@ -140,9 +136,12 @@ class StudentsRelationManager extends RelationManager
                 })
                 ->modalHeading(fn ($record) => 'Edit ' . $record->name)
                 ->modalDescription('Update student details and peer evaluation assignments')
-                ->modalWidth('lg'),
+                ->modalWidth('lg')
+                ->visible(fn () => $this->isCouncilAdviser()),
             DetachAction::make()
                 ->label('Remove')
+                ->color('danger')
+                ->visible(fn () => $this->isCouncilAdviser())
                 ->after(function ($record) {
                     // Remove all peer evaluator assignments for this student in this evaluation
                     EvaluationPeerEvaluator::where('evaluation_id', $this->ownerRecord->id)
@@ -292,5 +291,14 @@ class StudentsRelationManager extends RelationManager
                 ->danger()
                 ->send();
         }
+    }
+
+    /**
+     * Check if current user is the council adviser for this evaluation
+     */
+    protected function isCouncilAdviser(): bool
+    {
+        $user = auth()->user();
+        return $user && $this->ownerRecord->council_adviser_id === $user->id;
     }
 }

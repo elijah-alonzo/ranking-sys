@@ -162,8 +162,6 @@ class MyEvaluationResource extends Resource
             return $query->whereRaw('1 = 0'); // No access if not authenticated
         }
 
-        // Users can see evaluations where they are the adviser OR participating as a student
-        // This includes admin, adviser, and student users
         return $query->where(function ($q) use ($user) {
             // Show evaluations where user is the council adviser
             $q->where('council_adviser_id', $user->id)
