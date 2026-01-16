@@ -26,21 +26,6 @@ class ViewMyEvaluation extends ViewRecord
                 ->label('Add Student Officers');
         }
         
-        // Advisers can conduct evaluations  
-        if ($user && $record && $record->council_adviser_id === $user->id) {
-            // Get all students in this evaluation for adviser evaluation
-            $students = $record->users;
-            
-            foreach ($students as $student) {
-                $actions[] = Action::make("evaluate_adviser_{$student->id}")
-                    ->label("Evaluate {$student->name}")
-                    ->icon('heroicon-o-academic-cap')
-                    ->color('primary')
-                    ->url(fn() => $record->getEvaluationUrl($student->id, 'adviser'))
-                    ->tooltip("Complete adviser evaluation for {$student->name}");
-            }
-        }
-        
         // Students can access evaluations
         if ($user && $record && $user->role === 'student') {
             // Check if user is participating in this evaluation

@@ -54,16 +54,6 @@ class StudentsRelationManager extends RelationManager
                     ->label('Position')
                     ->placeholder('No position assigned'),
             ]),
-            ColumnGroup::make('Peer Assignments', [
-                TextColumn::make('peer_evaluatees_count')
-                    ->label('Evaluating')
-                    ->getStateUsing(fn ($record) => $this->getPeerEvaluateesCount($record->id))
-                    ->tooltip('Number of peers this student will evaluate'),
-                TextColumn::make('peer_evaluators_count')
-                    ->label('Evaluated By')
-                    ->getStateUsing(fn ($record) => $this->getPeerEvaluatorsCount($record->id))
-                    ->tooltip('Number of peers who will evaluate this student'),
-            ]),
             ColumnGroup::make('Evaluation Scores', [
                 TextColumn::make('self_score')
                     ->label('Self')
@@ -124,13 +114,19 @@ class StudentsRelationManager extends RelationManager
 
     protected function getTableActions(): array
     {
-        // Check if user is the council adviser for this evaluation
-        $user = auth()->user();
-        if (!$user || $this->ownerRecord->council_adviser_id !== $user->id) {
-            return [];
-        }
-
         return [
+            Action::make('evaluate')
+                ->label('Evaluate')
+                ->icon('heroicon-o-clipboard-document-check')
+                ->color('primary')
+                ->button()
+                ->size('sm')
+                ->url(fn ($record) => $this->ownerRecord->getEvaluationUrl($record->id, 'adviser'))
+                ->tooltip('Complete adviser evaluation for this student')
+                ->visible(function () {
+                    $user = auth()->user();
+                    return $user && $this->ownerRecord->council_adviser_id === $user->id;
+                }),
             EditAction::make()
                 ->form($this->getEditForm())
                 ->action(function ($record, $data) {
@@ -242,24 +238,6 @@ class StudentsRelationManager extends RelationManager
                 })
                 ->columns(2)
         ];
-    }
-
-    protected function getPeerEvaluateesCount(int $userId): string
-    {
-        $count = EvaluationPeerEvaluator::where('evaluation_id', $this->ownerRecord->id)
-            ->where('evaluator_user_id', $userId)
-            ->count();
-
-        return $count > 0 ? $count : '-';
-    }
-
-    protected function getPeerEvaluatorsCount(int $userId): string
-    {
-        $count = EvaluationPeerEvaluator::where('evaluation_id', $this->ownerRecord->id)
-            ->where('evaluatee_user_id', $userId)
-            ->count();
-
-        return $count > 0 ? $count : '-';
     }
 
     /**
