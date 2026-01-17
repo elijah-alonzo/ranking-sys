@@ -30,6 +30,7 @@ class RankingPanelProvider extends PanelProvider
             ->id('ranking')
             ->path('ranking')
             ->login()
+            ->registration()
             ->colors([
                 'primary' => Color::Green,
             ])
